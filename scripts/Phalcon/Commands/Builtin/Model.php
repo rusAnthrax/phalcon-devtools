@@ -4,10 +4,10 @@
   +------------------------------------------------------------------------+
   | Phalcon Developer Tools                                                |
   +------------------------------------------------------------------------+
-  | Copyright (c) 2011-2016 Phalcon Team (http://www.phalconphp.com)       |
+  | Copyright (c) 2011-2016 Phalcon Team (https://www.phalconphp.com)      |
   +------------------------------------------------------------------------+
   | This source file is subject to the New BSD License that is bundled     |
-  | with this package in the file docs/LICENSE.txt.                        |
+  | with this package in the file LICENSE.txt.                             |
   |                                                                        |
   | If you did not receive a copy of the license and are unable to         |
   | obtain it through the world-wide-web, please send an email             |
@@ -42,7 +42,7 @@ class Model extends Command
      */
     public function getPossibleParams()
     {
-        return array(
+        return [
             'name=s'          => 'Table name',
             'schema=s'        => 'Name of the schema [optional]',
             'namespace=s'     => "Model's namespace [optional]",
@@ -53,10 +53,13 @@ class Model extends Command
             'directory=s'     => 'Base path on which project is located [optional]',
             'output=s'        => 'Folder where models are located [optional]',
             'force'           => 'Rewrite the model [optional]',
+            'camelize'        => 'Properties is in camelCase [optional]',
             'trace'           => 'Shows the trace of the framework in case of exception [optional]',
             'mapcolumn'       => 'Get some code for map columns [optional]',
-            'abstract'        => 'Abstract Model [optional]'
-        );
+            'abstract'        => 'Abstract Model [optional]',
+            'annotate'        => 'Annotate Attributes [optional]',
+            'help'            => 'Shows this help [optional]',
+        ];
     }
 
     /**
@@ -67,7 +70,7 @@ class Model extends Command
      */
     public function run(array $parameters)
     {
-        $name = $this->getOption(array('name', 1));
+        $name = $this->getOption(['name', 1]);
 
         $className = Text::camelize(isset($parameters[1]) ? $parameters[1] : $name);
         $fileName = Text::uncamelize($className);
@@ -75,7 +78,7 @@ class Model extends Command
         $schema = $this->getOption('schema');
 
         $modelBuilder = new ModelBuilder(
-            array(
+            [
                 'name'              => $name,
                 'schema'            => $schema,
                 'className'         => $className,
@@ -87,10 +90,12 @@ class Model extends Command
                 'modelsDir'         => $this->getOption('output'),
                 'extends'           => $this->getOption('extends'),
                 'excludeFields'     => $this->getOption('excludefields'),
+                'camelize'          => $this->isReceivedOption('camelize'),
                 'force'             => $this->isReceivedOption('force'),
                 'mapColumn'         => $this->isReceivedOption('mapcolumn'),
-                'abstract'          => $this->isReceivedOption('abstract')
-            )
+                'abstract'          => $this->isReceivedOption('abstract'),
+                'annotate'          => $this->isReceivedOption('annotate')
+            ]
         );
 
         $modelBuilder->build();
@@ -103,7 +108,7 @@ class Model extends Command
      */
     public function getCommands()
     {
-        return array('model', 'create-model');
+        return ['model', 'create-model'];
     }
 
     /**
