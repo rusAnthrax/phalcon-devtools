@@ -23,16 +23,34 @@
     },
     "require": {
         "php": ">=5.5",
-        "ext-phalcon": "^3.0",
-        "psy/psysh": "@stable"
+        "ext-phalcon": "~3.3",
+        "psy/psysh": "~0.9",
+        "nikic/php-parser": "^3.1"
     },
     "require-dev": {
-        "kherge/box": "^2.7"
+        "kherge/box": "^2.7",
+        "codeception/codeception": "^2.3",
+        "phpdocumentor/reflection-docblock": "^2.0",
+        "phpunit/phpunit": "^4.8",
+        "codeception/specify": "^0.4",
+        "codeception/verify": "^0.3",
+        "squizlabs/php_codesniffer": "^3.2"
+
     },
     "autoload": {
         "psr-4" : {
             "Phalcon\\" : "scripts/Phalcon/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Phalcon\\Test\\": "tests/unit",
+            "Phalcon\\Test\\Models\\": "tests/_data/models",
+            "Phalcon\\Test\\Module\\": "tests/_support/Module"
+        },
+        "files": [
+            "tests/_support/helpers.php"
+        ]
     },
     "bin": ["phalcon.php"]
 }

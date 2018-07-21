@@ -4,7 +4,7 @@
   +------------------------------------------------------------------------+
   | Phalcon Developer Tools                                                |
   +------------------------------------------------------------------------+
-  | Copyright (c) 2011-2016 Phalcon Team (https://www.phalconphp.com)      |
+  | Copyright (c) 2011-present Phalcon Team (https://www.phalconphp.com)   |
   +------------------------------------------------------------------------+
   | This source file is subject to the New BSD License that is bundled     |
   | with this package in the file LICENSE.txt.                             |
@@ -45,19 +45,20 @@ class AllModels extends Command
     {
         return [
             'config=s'    => 'Configuration file [optional]',
-            'models=s'    => 'Models directory [optional]',
             'schema=s'    => 'Name of the schema. [optional]',
             'namespace=s' => "Model's namespace [optional]",
             'extends=s'   => 'Models extends [optional]',
             'force'       => 'Force script to rewrite all the models [optional]',
+            'camelize'    => 'Properties is in camelCase [optional]',
             'get-set'     => 'Attributes will be protected and have setters/getters [optional]',
             'doc'         => 'Helps to improve code completion on IDEs [optional]',
             'relations'   => 'Possible relations defined according to convention [optional]',
             'fk'          => 'Define any virtual foreign keys [optional]',
-            'validations' => 'Define possible domain validation according to conventions',
             'directory=s' => 'Base path on which project will be created [optional]',
+            'output=s'    => 'Folder where models are located [optional]',
             'mapcolumn'   => 'Get some code for map columns [optional]',
             'abstract'    => 'Abstract Model [optional]',
+            'annotate'    => 'Annotate Attributes [optional]',
             'help'        => 'Shows this help [optional]',
         ];
     }
@@ -95,18 +96,17 @@ class AllModels extends Command
                     $config = new Config($config);
                 }
             }
-
         } else {
             $config = $this->path->getConfig();
         }
 
-        if (!$this->isReceivedOption('models')) {
+        if (!$this->isReceivedOption('output')) {
             if (!isset($config->application->modelsDir)) {
                 throw new CommandsException("Builder doesn't know where is the models directory.");
             }
             $modelsDir = rtrim($config->application->modelsDir, '\\/') . DIRECTORY_SEPARATOR;
         } else {
-            $modelsDir = $this->getOption('models');
+            $modelsDir = $this->getOption('output');
         }
 
         if (false == $this->path->isAbsolutePath($modelsDir)) {
@@ -126,7 +126,9 @@ class AllModels extends Command
             'genDocMethods' => $this->isReceivedOption('doc'),
             'modelsDir' => $modelsDir,
             'mapColumn' => $this->isReceivedOption('mapcolumn'),
-            'abstract' => $this->isReceivedOption('abstract')
+            'abstract' => $this->isReceivedOption('abstract'),
+            'camelize' => $this->isReceivedOption('camelize'),
+            'annotate' => $this->isReceivedOption('annotate'),
         ]);
 
         $modelBuilder->build();

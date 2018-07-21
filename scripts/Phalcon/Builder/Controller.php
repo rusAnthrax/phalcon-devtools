@@ -4,7 +4,7 @@
   +------------------------------------------------------------------------+
   | Phalcon Developer Tools                                                |
   +------------------------------------------------------------------------+
-  | Copyright (c) 2011-2016 Phalcon Team (https://www.phalconphp.com)      |
+  | Copyright (c) 2011-present Phalcon Team (https://www.phalconphp.com)   |
   +------------------------------------------------------------------------+
   | This source file is subject to the New BSD License that is bundled     |
   | with this package in the file LICENSE.txt.                             |
@@ -71,11 +71,11 @@ class Controller extends Component
 
         if (!$controllersDir = $this->options->get('controllersDir')) {
             $config = $this->getConfig();
-            if (!isset($config->application->controllersDir)) {
+            if (empty($config->path('application.controllersDir'))) {
                 throw new BuilderException('Please specify a controller directory.');
             }
 
-            $controllersDir = $config->application->controllersDir;
+            $controllersDir = $config->path('application.controllersDir');
         }
 
         if (!$this->options->contains('name')) {
@@ -93,7 +93,8 @@ class Controller extends Component
 
         $controllerPath = rtrim($controllersDir, '\\/') . DIRECTORY_SEPARATOR . $className . "Controller.php";
 
-        $code = "<?php\n\n".$namespace."class ".$className."Controller extends ".$baseClass."\n{\n\n\tpublic function indexAction()\n\t{\n\n\t}\n\n}\n\n";
+        $code = "<?php\n\n" . $namespace . "class " . $className . "Controller extends " .
+            $baseClass . "\n{\n\n\tpublic function indexAction()\n\t{\n\n\t}\n\n}\n\n";
         $code = str_replace("\t", "    ", $code);
 
         if (file_exists($controllerPath) && !$this->options->contains('force')) {

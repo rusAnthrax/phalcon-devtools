@@ -36,14 +36,13 @@ class CommandsListener
      * @param Command $command
      *
      * @return bool
-     * @throws CommandsException
+     * @throws DotPhalconMissingException
      */
     public function beforeCommand(Event $event, Command $command)
     {
         $parameters = $command->parseParameters([], ['h' => 'help']);
 
-        if (
-            count($parameters) < ($command->getRequiredParams() + 1) ||
+        if (count($parameters) < ($command->getRequiredParams() + 1) ||
             $command->isReceivedOption(['help', 'h', '?']) ||
             in_array($command->getOption(1), ['help', 'h', '?'])
         ) {
@@ -54,8 +53,11 @@ class CommandsListener
 
         if ($command->canBeExternal() == false) {
             $path = $command->getOption('directory');
-            if (!file_exists($path.'.phalcon') || !is_dir($path.'.phalcon')) {
-                throw new CommandsException('This command should be invoked inside a Phalcon project directory.');
+            if ($path) {
+                $path = realpath($path) . DIRECTORY_SEPARATOR;
+            };
+            if (!file_exists($path . '.phalcon') || !is_dir($path . '.phalcon')) {
+                throw new DotPhalconMissingException();
             }
         }
 

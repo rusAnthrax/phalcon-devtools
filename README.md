@@ -4,7 +4,7 @@
 [![Software License](https://img.shields.io/badge/license-BSD--3-brightgreen.svg?style=flat-square)][:license:]
 [![Total Downloads](https://img.shields.io/packagist/dt/phalcon/devtools.svg?style=flat-square)][:packagist:]
 [![Daily Downloads](https://img.shields.io/packagist/dd/phalcon/devtools.svg?style=flat-square)][:packagist:]
-[![Build Status](https://travis-ci.org/phalcon/phalcon-devtools.svg?branch=master)][:travis:]
+[![Build Status](https://api.travis-ci.org/phalcon/phalcon-devtools.svg?branch=master)][:travis:]
 
 ![Phalcon WebTools](https://cloud.githubusercontent.com/assets/1256298/18617851/b7d31558-7de2-11e6-83e0-30e5902af714.png)
 
@@ -21,7 +21,7 @@ with Phalcon framework.
 ## Requirements
 
 * PHP >= 5.5
-* Phalcon >= 3.1.0
+* Phalcon >= 3.3.0
 
 ## Installing via Composer
 
@@ -36,7 +36,7 @@ Create the composer.json file as follows:
 ```json
 {
     "require-dev": {
-        "phalcon/devtools": "~3.1"
+        "phalcon/devtools": "~3.4"
     }
 }
 ```
@@ -46,7 +46,7 @@ If you are still using Phalcon 2.0.x, create a `composer.json` with the followin
 ```json
 {
     "require-dev": {
-        "phalcon/devtools": "^3.0"
+        "phalcon/devtools": "^2.0"
     }
 }
 ```
@@ -90,7 +90,8 @@ the `phalcon.php` to a directory in your `PATH`, so you can issue phalcon comman
 where a phalcon project resides.
 
 ```bash
-ln -s ~/phalcon-devtools/phalcon.php /usr/bin/phalcon
+cd phalcon-devtools
+ln -s $(pwd)/phalcon.php /usr/bin/phalcon
 chmod ugo+x /usr/bin/phalcon
 ```
 
@@ -113,7 +114,7 @@ This command should display something similar to:
 ```sh
 $ phalcon --help
 
-Phalcon DevTools (3.1.1)
+Phalcon DevTools (3.4.0)
 
 Help:
   Lists the commands available in Phalcon devtools
@@ -129,6 +130,8 @@ Available commands:
   scaffold         (alias of: create-scaffold)
   migration        (alias of: create-migration)
   webtools         (alias of: create-webtools)
+  serve            (alias of: server)
+  console          (alias of: shell, psysh)
 ```
 
 ## Database adapter
@@ -149,7 +152,7 @@ $config = [
 
 ## Configuration file
 
-By creating **phalcon.json** or any other configuration file called **phalcon** in root project you can set options for all possible commands, for example:
+By creating **config.json** or any other configuration file called **config** in root project you can set options for all possible commands, for example:
 
 ```json
 {

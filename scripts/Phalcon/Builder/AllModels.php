@@ -4,7 +4,7 @@
   +------------------------------------------------------------------------+
   | Phalcon Developer Tools                                                |
   +------------------------------------------------------------------------+
-  | Copyright (c) 2011-2016 Phalcon Team (https://www.phalconphp.com)      |
+  | Copyright (c) 2011-present Phalcon Team (https://www.phalconphp.com)   |
   +------------------------------------------------------------------------+
   | This source file is subject to the New BSD License that is bundled     |
   | with this package in the file LICENSE.txt.                             |
@@ -62,7 +62,11 @@ class AllModels extends Component
 
         $this->options->offsetSet('directory', $this->path->getRootPath());
 
-        $config = $this->getConfig();
+        if (gettype($this->options->get('config')) == 'object') {
+            $config = $this->options->get('config');
+        } else {
+            $config = $this->getConfig();
+        }
 
         if (!$modelsDir = $this->options->get('modelsDir')) {
             if (!isset($config->application->modelsDir)) {
@@ -84,7 +88,7 @@ class AllModels extends Component
         $defineRelations = $this->options->get('defineRelations', false);
         $defineForeignKeys = $this->options->get('foreignKeys', false);
         $genSettersGetters = $this->options->get('genSettersGetters', false);
-        $mapColumn = $this->options->get('mapColumn', null);
+        $mapColumn = $this->options->get('mapColumn', false);
 
         $adapter = $config->database->adapter;
         $this->isSupportedAdapter($adapter);
@@ -104,7 +108,7 @@ class AllModels extends Component
         unset($configArray['adapter']);
 
         /**
-         * @var $db \Phalcon\Db\Adapter\Pdo
+         * @var \Phalcon\Db\Adapter\Pdo $db
          */
         $db = new $adapterName($configArray);
 
@@ -117,6 +121,7 @@ class AllModels extends Component
         $hasMany = [];
         $belongsTo = [];
         $foreignKeys = [];
+        $referenceList = [];
         if ($defineRelations || $defineForeignKeys) {
             foreach ($db->listTables($schema) as $name) {
                 if ($defineRelations) {
@@ -133,8 +138,9 @@ class AllModels extends Component
 
                 $camelCaseName = Utils::camelize($name);
                 $refSchema = ($adapter != 'Postgresql') ? $schema : $config->database->dbname;
+                $referenceList[$name] = $db->describeReferences($name, $schema);
 
-                foreach ($db->describeReferences($name, $schema) as $reference) {
+                foreach ($referenceList[$name] as $reference) {
                     $columns = $reference->getColumns();
                     $referencedColumns = $reference->getReferencedColumns();
                     $referencedModel = Utils::camelize($reference->getReferencedTable());
@@ -164,6 +170,7 @@ class AllModels extends Component
                     $belongsTo[$name] = [];
                     $foreignKeys[$name] = [];
                 }
+                $referenceList[$name] = $db->describeReferences($name, $schema);
             }
         }
 
@@ -192,6 +199,7 @@ class AllModels extends Component
 
                 $modelBuilder = new Model([
                     'name' => $name,
+                    'config' => $config,
                     'schema' => $schema,
                     'extends' => $this->options->get('extends'),
                     'namespace' => $this->options->get('namespace'),
@@ -200,10 +208,14 @@ class AllModels extends Component
                     'belongsTo' => $belongsToModel,
                     'foreignKeys' => $foreignKeysModel,
                     'genSettersGetters' => $genSettersGetters,
+                    'genDocMethods' => $this->options->get('genDocMethods'),
                     'directory' => $this->options->get('directory'),
                     'modelsDir' => $this->options->get('modelsDir'),
                     'mapColumn' => $mapColumn,
-                    'abstract' => $this->options->get('abstract')
+                    'abstract' => $this->options->get('abstract'),
+                    'referenceList' => $referenceList,
+                    'camelize' => $this->options->get('camelize'),
+                    'annotate' => $this->options->get('annotate'),
                 ]);
 
                 $modelBuilder->build();

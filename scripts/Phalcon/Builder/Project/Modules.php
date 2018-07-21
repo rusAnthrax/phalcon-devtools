@@ -133,7 +133,8 @@ class Modules extends ProjectBuilder
         }
 
         if (file_exists($this->options->get('projectPath') . 'index.html') == false) {
-            $code = '<html><body><h1>Mod-Rewrite is not enabled</h1><p>Please enable rewrite module on your web server to continue</body></html>';
+            $code = '<html><body><h1>Mod-Rewrite is not enabled</h1>' .
+                '<p>Please enable rewrite module on your web server to continue</body></html>';
             file_put_contents($this->options->get('projectPath') . 'index.html', $code);
         }
 
@@ -147,12 +148,14 @@ class Modules extends ProjectBuilder
      */
     private function createIndexViewFiles()
     {
-        $getFile = $this->options->get('templatePath') . '/project/modules/views/index.volt';
-        $putFile = $this->options->get('projectPath') . 'app/modules/frontend/views/index.volt';
+        $engine = $this->options->get('templateEngine') == 'volt' ? 'volt' : 'phtml';
+
+        $getFile = $this->options->get('templatePath') . '/project/modules/views/index.' . $engine;
+        $putFile = $this->options->get('projectPath') . 'app/modules/frontend/views/index.' . $engine;
         $this->generateFile($getFile, $putFile);
 
-        $getFile = $this->options->get('templatePath') . '/project/modules/views/index/index.volt';
-        $putFile = $this->options->get('projectPath') . 'app/modules/frontend/views/index/index.volt';
+        $getFile = $this->options->get('templatePath') . '/project/modules/views/index/index.' . $engine;
+        $putFile = $this->options->get('projectPath') . 'app/modules/frontend/views/index/index.' . $engine;
         $this->generateFile($getFile, $putFile);
 
         return $this;

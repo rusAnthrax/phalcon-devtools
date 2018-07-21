@@ -4,7 +4,7 @@
   +------------------------------------------------------------------------+
   | Phalcon Developer Tools                                                |
   +------------------------------------------------------------------------+
-  | Copyright (c) 2011-2016 Phalcon Team (https://www.phalconphp.com)      |
+  | Copyright (c) 2011-present Phalcon Team (https://www.phalconphp.com)   |
   +------------------------------------------------------------------------+
   | This source file is subject to the New BSD License that is bundled     |
   | with this package in the file LICENSE.txt.                             |
@@ -22,6 +22,7 @@
 namespace Phalcon\Generator;
 
 use Phalcon\Utils;
+use Phalcon\Options\OptionsAware as ModelOption;
 
 /**
  * Snippet Class
@@ -47,7 +48,7 @@ EOD;
         return PHP_EOL.sprintf($getSource, $source).PHP_EOL;
     }
 
-    public function getSetter($fieldName, $type, $setterName)
+    public function getSetter($originalFieldName, $fieldName, $type, $setterName)
     {
         $templateSetter = <<<EOD
     /**
@@ -63,7 +64,7 @@ EOD;
         return \$this;
     }
 EOD;
-        return PHP_EOL.sprintf($templateSetter, $fieldName, $type, $fieldName, $setterName, $fieldName, $fieldName, $fieldName).PHP_EOL;
+        return PHP_EOL.sprintf($templateSetter, $originalFieldName, $type, $fieldName, $setterName, $fieldName, $fieldName, $fieldName).PHP_EOL;
     }
 
     public function getValidateInclusion($fieldName, $varItems)
@@ -100,7 +101,11 @@ EOD;
         return PHP_EOL.sprintf($templateValidations, join('', $pieces)).PHP_EOL;
     }
 
-    public function getClass($namespace, $useDefinition, $classDoc = '', $abstract = '', $className, $extends = '', $content, $license = '')
+    /**
+     * @param ModelOption $modelOptions
+     * @return string
+     */
+    public function getClass($namespace, $useDefinition, $classDoc = '', $abstract = '', $modelOptions, $extends = '', $content, $license = '')
     {
         $templateCode = <<<EOD
 <?php
@@ -110,7 +115,17 @@ EOD;
 %s
 }
 EOD;
-        return sprintf($templateCode, $license, $namespace, $useDefinition, $classDoc, $abstract, $className, $extends, $content).PHP_EOL;
+        return sprintf(
+            $templateCode,
+            $license,
+            $namespace,
+            $useDefinition,
+            $classDoc,
+            $abstract,
+            $modelOptions->getOption('className'),
+            $extends,
+            $content)
+        .PHP_EOL;
     }
 
     public function getClassDoc($className, $namespace = '')
@@ -167,7 +182,7 @@ EOD;
     /**
      *
      * @var %s%s%s
-     * @Column(type="%s"%s, nullable=%s)
+     * @Column(column="%s", type="%s"%s, nullable=%s)
      */
     %s \$%s;
 EOD;
@@ -176,6 +191,7 @@ EOD;
                 $type,
                 $field->isPrimary() ? PHP_EOL.'     * @Primary' : '',
                 $field->isAutoIncrement() ? PHP_EOL.'     * @Identity' : '',
+                $field->getName(),
                 $type,
                 $field->getSize() ? ', length=' . $field->getSize() : '',
                 $field->isNotNull() ? 'false' : 'true', $visibility, $fieldName).PHP_EOL;
@@ -249,7 +265,7 @@ EOD;
      * Allows to query a set of records that match the specified conditions
      *
      * @param mixed \$parameters
-     * @return %s[]|%s
+     * @return %s[]|%s|\Phalcon\Mvc\Model\ResultSetInterface
      */
     public static function find(\$parameters = null)
     {
@@ -266,7 +282,7 @@ EOD;
      * Allows to query the first record that match the specified conditions
      *
      * @param mixed \$parameters
-     * @return %s
+     * @return %s|\Phalcon\Mvc\Model\ResultInterface
      */
     public static function findFirst(\$parameters = null)
     {

@@ -72,7 +72,8 @@ class Micro extends ProjectBuilder
         }
 
         if (file_exists($this->options->get('projectPath').'index.html') == false) {
-            $code = '<html><body><h1>Mod-Rewrite is not enabled</h1><p>Please enable rewrite module on your web server to continue</body></html>';
+            $code = '<html><body><h1>Mod-Rewrite is not enabled</h1>' .
+                '<p>Please enable rewrite module on your web server to continue</body></html>';
             file_put_contents($this->options->get('projectPath').'index.html', $code);
         }
 
@@ -86,12 +87,14 @@ class Micro extends ProjectBuilder
      */
     private function createIndexViewFiles()
     {
-        $getFile = $this->options->get('templatePath') . '/project/micro/views/index.phtml';
-        $putFile = $this->options->get('projectPath').'app/views/index.phtml';
+        $engine = $this->options->get('templateEngine') == 'volt' ? 'volt' : 'phtml';
+
+        $getFile = $this->options->get('templatePath') . '/project/micro/views/index.' . $engine;
+        $putFile = $this->options->get('projectPath').'app/views/index.' . $engine;
         $this->generateFile($getFile, $putFile);
 
-        $getFile = $this->options->get('templatePath') . '/project/micro/views/404.phtml';
-        $putFile = $this->options->get('projectPath').'app/views/404.phtml';
+        $getFile = $this->options->get('templatePath') . '/project/micro/views/404.' . $engine;
+        $putFile = $this->options->get('projectPath').'app/views/404.' . $engine;
         $this->generateFile($getFile, $putFile);
 
         return $this;

@@ -4,7 +4,7 @@
   +------------------------------------------------------------------------+
   | Phalcon Developer Tools                                                |
   +------------------------------------------------------------------------+
-  | Copyright (c) 2011-2016 Phalcon Team (https://www.phalconphp.com)      |
+  | Copyright (c) 2011-present Phalcon Team (https://www.phalconphp.com)   |
   +------------------------------------------------------------------------+
   | This source file is subject to the New BSD License that is bundled     |
   | with this package in the file LICENSE.txt.                             |
@@ -21,10 +21,13 @@
 namespace Phalcon\Commands\Builtin;
 
 use Phalcon\Text;
+use Phalcon\Utils;
 use Phalcon\Builder;
 use Phalcon\Script\Color;
 use Phalcon\Commands\Command;
 use Phalcon\Builder\Model as ModelBuilder;
+use Phalcon\Config;
+use Phalcon\Config\Adapter\Ini as ConfigIni;
 
 /**
  * Model Command
@@ -45,6 +48,7 @@ class Model extends Command
         return [
             'name=s'          => 'Table name',
             'schema=s'        => 'Name of the schema [optional]',
+            'config=s'        => 'Configuration file [optional]',
             'namespace=s'     => "Model's namespace [optional]",
             'get-set'         => 'Attributes will be protected and have setters/getters [optional]',
             'extends=s'       => 'Model extends the class name supplied [optional]',
@@ -71,18 +75,15 @@ class Model extends Command
     public function run(array $parameters)
     {
         $name = $this->getOption(['name', 1]);
-
-        $className = Text::camelize(isset($parameters[1]) ? $parameters[1] : $name);
-        $fileName = Text::uncamelize($className);
-
-        $schema = $this->getOption('schema');
+        $className = Utils::camelize(isset($parameters[1]) ? $parameters[1] : $name, '_-');
 
         $modelBuilder = new ModelBuilder(
             [
                 'name'              => $name,
-                'schema'            => $schema,
+                'schema'            => $this->getOption('schema'),
+                'config'            => $this->getConfigObject(),
                 'className'         => $className,
-                'fileName'          => $fileName,
+                'fileName'          => Text::uncamelize($className),
                 'genSettersGetters' => $this->isReceivedOption('get-set'),
                 'genDocMethods'     => $this->isReceivedOption('doc'),
                 'namespace'         => $this->getOption('namespace'),
@@ -139,5 +140,33 @@ class Model extends Command
     public function getRequiredParams()
     {
         return 1;
+    }
+
+    /**
+     * Get Config object
+     *
+     * @return Config
+     */
+    protected function getConfigObject()
+    {
+        if (!$this->isReceivedOption('config')) {
+            return $this->path->getConfig();
+        }
+
+        $configPath = $this->getOption('config');
+        if (false == $this->path->isAbsolutePath($this->getOption('config'))) {
+            $configPath = $this->path->getRootPath() . $this->getOption('config');
+        }
+
+        if (preg_match('/.*(:?\.ini)(?:\s)?$/i', $configPath)) {
+            return new ConfigIni($configPath);
+        }
+
+        $config = include $configPath;
+        if (is_array($config)) {
+            return new Config($config);
+        }
+
+        return $config;
     }
 }

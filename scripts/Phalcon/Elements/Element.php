@@ -26,6 +26,7 @@ use Phalcon\Mvc\User\Component;
 /**
  * \Phalcon\Elements\Element
  *
+ * @property \Phalcon\Tag $tag
  * @package Phalcon\Elements
  */
 class Element extends Component
@@ -51,14 +52,14 @@ class Element extends Component
         }
 
         if (isset($link['icon']) && is_string($link['icon'])) {
-            $text = strtr(':icon:text' ,[
+            $text = strtr(':icon:text', [
                 ':icon' => '<i class="'.$link['icon'].'"></i> ',
                 ':text' => $text
             ]);
         }
 
         if (isset($link['caret']) && is_string($link['caret'])) {
-            $text = strtr(':text:icon' ,[
+            $text = strtr(':text:icon', [
                 ':icon' => ' <i class="'.$link['caret'].'"></i>',
                 ':text' => $text
             ]);

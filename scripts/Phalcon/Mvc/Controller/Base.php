@@ -37,6 +37,12 @@ use Phalcon\Assets\Filters\Cssmin;
  * @property \Phalcon\Registry $registry
  * @property \Phalcon\Elements\Menu\SidebarMenu $sidebar
  * @property \Phalcon\Resources\AssetsResource $resource
+ * @property \Phalcon\Assets\Manager $assets
+ * @property \Phalcon\Http\Request|\Phalcon\Http\RequestInterface $request
+ * @property \Phalcon\Mvc\Router|\Phalcon\Mvc\RouterInterface $router
+ * @property \Phalcon\Http\Response|\Phalcon\Http\ResponseInterface $response
+ * @property \Phalcon\Mvc\View|\Phalcon\Mvc\View $view
+ * @property \Phalcon\Mvc\Url|\Phalcon\Mvc\UrlInterface $url
  *
  * @package Phalcon\Mvc\Controller
  */
@@ -108,12 +114,8 @@ abstract class Base extends Controller
 
         $this->assets
             ->collection('js_ie')
-            ->setTargetPath('js/webtools-ie.js')
-            ->setTargetUri('js/webtools-ie.js?v=' . Version::get())
             ->addJs('https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js', false, false)
-            ->addJs('https://oss.maxcdn.com/respond/1.4.2/respond.min.js', false, false)
-            ->join(true)
-            ->addFilter(new Jsmin);
+            ->addJs('https://oss.maxcdn.com/respond/1.4.2/respond.min.js', false, false);
 
         return $this;
     }
@@ -155,9 +157,9 @@ abstract class Base extends Controller
                 'phalcon_version' => PhVersion::get(),
                 'phalcon_team'    => 'Phalcon Team',
                 'lte_team'        => 'Almsaeed Studio',
-                'phalcon_url'     => 'https://www.phalconphp.com',
+                'phalcon_url'     => 'https://phalconphp.com/en/',
                 'devtools_url'    => 'https://github.com/phalcon/phalcon-devtools',
-                'lte_url'         => 'http://almsaeedstudio.com',
+                'lte_url'         => 'https://adminlte.io/',
                 'app_name'        => 'Phalcon WebTools',
                 'app_mini'        => 'PWT',
                 'lte_name'        => 'AdminLTE',

@@ -4,7 +4,7 @@
   +------------------------------------------------------------------------+
   | Phalcon Developer Tools                                                |
   +------------------------------------------------------------------------+
-  | Copyright (c) 2011-2016 Phalcon Team (https://www.phalconphp.com)      |
+  | Copyright (c) 2011-present Phalcon Team (https://www.phalconphp.com)   |
   +------------------------------------------------------------------------+
   | This source file is subject to the New BSD License that is bundled     |
   | with this package in the file LICENSE.txt.                             |
@@ -25,7 +25,7 @@ use Phalcon\Version;
 if (!extension_loaded('phalcon')) {
     throw new Exception(
         "Phalcon extension isn't installed, follow these instructions to install it: " .
-        'https://docs.phalconphp.com/en/latest/reference/install.html'
+        'https://docs.phalconphp.com/en/latest/installation'
     );
 }
 
@@ -42,7 +42,7 @@ defined('DEVTOOLS_START_MEMORY') || define('DEVTOOLS_START_MEMORY', memory_get_u
 /**
  * @const PTOOLSPATH The path to the Phalcon Developers Tools.
  */
-defined('PTOOLSPATH') || define('PTOOLSPATH', rtrim(getenv('PTOOLSPATH') ?: dirname(dirname(__FILE__)), '\\/'));
+defined('PTOOLSPATH') || define('PTOOLSPATH', rtrim(trim(getenv('PTOOLSPATH'), '\"\'') ?: dirname(dirname(__FILE__)), '\\/'));
 
 /**
  * Check for old versions
@@ -103,7 +103,7 @@ defined('HOSTNAME') || define('HOSTNAME', explode('.', gethostname())[0]);
 defined('ADMIN_LTE_VERSION') || define('ADMIN_LTE_VERSION', '2.3.6');
 
 /** @const COMPATIBLE_VERSION The compatible Phalcon version. */
-define('COMPATIBLE_VERSION', 3000040);
+defined('COMPATIBLE_VERSION') || define('COMPATIBLE_VERSION', 3020040);
 
 /**
  * Register Devtools classes.
@@ -134,6 +134,6 @@ if (file_exists('.phalcon' . DS . 'autoload.php')) {
 if (Version::getId() < COMPATIBLE_VERSION) {
     throw new Exception(
         "Your Phalcon version isn't compatible with Developer Tools, " .
-        'download the latest at: https://phalconphp.com/download'
+        'download the latest at: https://phalconphp.com/en/download/linux'
     );
 }
